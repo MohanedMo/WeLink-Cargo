@@ -3,10 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { Users, UserCheck } from "lucide-react";
 
-import { gateApis } from "../services/Apis/gate page/gate.api";
 import { useUserType, useGateData, useZonesData, useTicketData } from "../store/gate-page";
+import { gateApis } from "../services/Apis/gate page/gate.api";
 import { connectWS } from "../services/ws";
-import type { Gate } from "../services/Apis/gate page/gate.types";
 
 import { GateHeader } from "../components/GateHeader";
 import ZoneCard from "../components/ZoneCard";
