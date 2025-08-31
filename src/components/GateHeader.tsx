@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { status } from "../services/ws";
 import { Terminal } from "lucide-react"
+import { NavLink } from "react-router-dom";
 
 
 interface GateHeaderProps {
@@ -82,7 +83,8 @@ export function GateHeader({
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-blue-200/40 bg-blue-900/95 backdrop-blur-md supports-[backdrop-filter]:bg-blue-900/90">
-      <div className="mx-auto flex h-22 md:h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
+      <div className="mx-auto flex h-22  max-w-7xl items-center justify-between px-6 lg:px-8">
+          {gateName && (
         <div className="flex items-center gap-6 lg:gap-8">
           <div className="flex items-center gap-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/20 border border-green-500/30 ring-1 ring-green-500/10">
@@ -93,7 +95,7 @@ export function GateHeader({
                 {gateName}
               </h1>
               <p className="font-mono text-sm text-gray-300">{gateLocation}</p>
-              <div className="flex md:hidden items-center gap-2">
+              <div className="flex items-center gap-2">
               {getStatusIcon()}
               <span className={`text-sm font-medium ${getStatusColor()}`}>
                 {status}
@@ -102,14 +104,14 @@ export function GateHeader({
             </div>
           </div>
         </div>
+          )}
 
         <div className="hidden md:flex items-center gap-4 lg:gap-6">
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              {getStatusIcon()}
-              <span className={`text-sm font-medium ${getStatusColor()}`}>
-                {status}
-              </span>
+            <div className="flex items-center gap-5">
+              <NavLink className='text-white' to={'/gates'}>Gates</NavLink>
+              <NavLink className='text-white' to='/checkout'>Checkout</NavLink>
+              <NavLink className='text-white' to='/admin'>Admin</NavLink>
             </div>
           </div>
         </div>

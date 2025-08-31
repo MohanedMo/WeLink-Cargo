@@ -1,4 +1,4 @@
-import { useZonesData } from "../store/gate-page";
+import { useZonesData } from "../store/gate";
 
 import type { Zone } from "./Apis/gate page/gate.types";
 
@@ -6,7 +6,7 @@ let socket = new WebSocket("ws://localhost:3000/api/v1/ws");
 
 export let status: string = "Connecting";
 
-export const connectWS = (gateId: string ='gate_1') => {
+export const connectWS = (gateId: string = "gate_1") => {
   if (!socket || socket.readyState === WebSocket.CLOSED) {
     socket = new WebSocket("ws://localhost:4000");
   }

@@ -3,11 +3,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { Users, UserCheck } from "lucide-react";
 
-import { useUserType, useGateData, useZonesData, useTicketData } from "../store/gate-page";
+import {
+  useUserType,
+  useGateData,
+  useZonesData,
+  useTicketData,
+} from "../store/gate";
 import { gateApis } from "../services/Apis/gate page/gate.api";
 import { connectWS } from "../services/ws";
 
-import { GateHeader } from "../components/GateHeader";
 import ZoneCard from "../components/ZoneCard";
 import { TicketModel } from "../components/TicketModal";
 
@@ -16,7 +20,7 @@ const Gate = () => {
   const { userType, changeUserType } = useUserType();
   const { gateData, setGateData } = useGateData();
   const { zonesData, setZones } = useZonesData();
-  const { isModelOpen, ticketData, setModelStatus} = useTicketData();
+  const { isModelOpen, ticketData, setModelStatus } = useTicketData();
 
   const { data: gates = [] } = useQuery({
     queryKey: ["gates"],
@@ -32,17 +36,15 @@ const Gate = () => {
   useEffect(() => {
     const newGate = gates?.find((g) => g.id === gateId);
     if (newGate && newGate.id !== gateData?.id) {
-        setGateData(newGate);
-        setZones(zones || []);
+      setGateData(newGate);
+      setZones(zones || []);
     }
 
     connectWS(gateId);
-}, [gates, gateId]);
-
+  }, [gates, gateId]);
 
   return (
     <>
-      <GateHeader gateName={gateData?.name} gateLocation={gateData?.location} />
       <main className="container mx-auto px-6 py-8 max-w-7xl">
         <div className="flex items-center rounded-lg bg-gray-800/40 border border-gray-600/60 p-1 w-fit mb-3">
           <button
@@ -121,7 +123,11 @@ const Gate = () => {
             )}
           </div>
         </div>
-        <TicketModel isOpen={isModelOpen} ticketData={ticketData} onClose={() => setModelStatus(false)}/>
+        <TicketModel
+          isOpen={isModelOpen}
+          ticketData={ticketData}
+          onClose={() => setModelStatus(false)}
+        />
       </main>
     </>
   );

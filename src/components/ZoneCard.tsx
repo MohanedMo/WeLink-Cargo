@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { Zone } from "../services/Apis/gate page/gate.types";
 import { gateApis } from "../services/Apis/gate page/gate.api";
-import { useUserType, useGateData, useTicketData } from "../store/gate-page";
+import { useUserType, useGateData, useTicketData } from "../store/gate";
 import Swal from "sweetalert2";
 
 type ZoneCardProps = {
@@ -12,8 +12,8 @@ type ZoneCardProps = {
 const ZoneCard = ({ zone }: ZoneCardProps) => {
   const { userType } = useUserType();
   const { gateData } = useGateData();
-  const {setModelStatus, setTicketData} = useTicketData()
-  const [subscriberId, setSubscriberId] = useState('')
+  const { setModelStatus, setTicketData } = useTicketData();
+  const [subscriberId, setSubscriberId] = useState("");
 
   const bookTicketBodyForVisitor = {
     gateId: gateData.id,
@@ -21,19 +21,22 @@ const ZoneCard = ({ zone }: ZoneCardProps) => {
     type: userType,
   };
   const bookTicketBodyForSubscriber = {
-    subscriptionId : subscriberId,
+    subscriptionId: subscriberId,
     gateId: gateData.id,
     zoneId: zone.id,
     type: userType,
   };
-  const bodyByType = userType === 'visitor' ? bookTicketBodyForVisitor : bookTicketBodyForSubscriber  
+  const bodyByType =
+    userType === "visitor"
+      ? bookTicketBodyForVisitor
+      : bookTicketBodyForSubscriber;
 
   const mutation = useMutation({
     mutationFn: () => gateApis.bookTicket(bodyByType),
     onSuccess: (bookedZone) => {
-        setModelStatus(true)
-        setTicketData(bookedZone)
-        console.log(bookedZone);
+      setModelStatus(true);
+      setTicketData(bookedZone);
+      console.log(bookedZone);
     },
     onError: () => {
       Swal.fire({
@@ -46,39 +49,42 @@ const ZoneCard = ({ zone }: ZoneCardProps) => {
   });
 
   const { data, refetch } = useQuery({
-  queryKey: ["subscriber-id", subscriberId],
-  queryFn: () => gateApis.subscriptionIdValidation(subscriberId),
-  enabled: false
-});
+    queryKey: ["subscriber-id", subscriberId],
+    queryFn: () => gateApis.subscriptionIdValidation(subscriberId),
+    enabled: false,
+  });
 
+  useEffect(() => {
+    if(subscriberId.length !== 0){
+      refetch()
+    }
+  },[subscriberId])
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>){
-    e.preventDefault()
-    if(subscriberId.length === 0){
-        Swal.fire({
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (subscriberId.length === 0) {
+      Swal.fire({
         title: "Error!",
         text: "Please write the subscription id",
         icon: "error",
         confirmButtonText: "Ok",
       });
-      return
+      return;
     }
-    refetch()
+    refetch();    
 
-    if(data && data?.active && data?.category === zone.categoryId){
-        console.log('success')
-        mutation.mutate()
-    }else{
-        Swal.fire({
+    if (data && data?.active && data?.category === zone.categoryId) {
+      mutation.mutate();
+    } else {
+      Swal.fire({
         title: "Error!",
         text: "Please write valid subscriber id !",
         icon: "error",
         confirmButtonText: "Ok",
       });
-      return
+      return;
     }
-}
-  
+  }
 
   return (
     <div
@@ -240,22 +246,30 @@ const ZoneCard = ({ zone }: ZoneCardProps) => {
             ${zone.rateNormal}
           </span>
         </div>
-        {userType === 'visitor' ? (
-        <button
-          onClick={() => mutation.mutate()}
-          className="px-4 py-2 bg-blue-900/95 rounded-xl mt-5 cursor-pointer text-white"
-        >
-          Book A Ticket
-        </button>
-        ):(
-            <form onSubmit={handleSubmit} className="flex my-3 gap-3">
-                <input onChange={(e) => setSubscriberId(e.currentTarget.value)} type="text" id="subscription-id" placeholder="Subscription ID" className="text-white p-2 border-2 border-blue-900/95 rounded-lg"/>
-                <input className="px-4 py-1 bg-blue-900/95 rounded-xl cursor-pointer text-white" type="submit" />
-            </form>
+        {userType === "visitor" ? (
+          <button
+            onClick={() => mutation.mutate()}
+            className="px-4 py-2 bg-blue-900/95 rounded-xl mt-5 cursor-pointer text-white"
+          >
+            Book A Ticket
+          </button>
+        ) : (
+          <form onSubmit={handleSubmit} className="flex my-3 gap-3">
+            <input
+              onChange={(e) => setSubscriberId(e.currentTarget.value)}
+              type="text"
+              id="subscription-id"
+              placeholder="Subscription ID"
+              className="text-white p-2 border-2 border-blue-900/95 rounded-lg"
+            />
+            <input
+              className="px-4 py-1 bg-blue-900/95 rounded-xl cursor-pointer text-white"
+              type="submit"
+            />
+          </form>
         )}
       </div>
     </div>
-
   );
 };
 
