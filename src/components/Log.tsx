@@ -46,7 +46,9 @@ const Log = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap ">
                     <span className="text-sm  font-mono text-green-400">
-                      {formatDateTime(log.timestamp) === 'Invalid Date' ? '' : formatDateTime(log.timestamp)}
+                      {formatDateTime(log.timestamp) === "Invalid Date"
+                        ? ""
+                        : formatDateTime(log.timestamp)}
                     </span>
                   </td>
                 </tr>

@@ -3,14 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { Users, UserCheck } from "lucide-react";
 
+import { gateApis } from "../services/Apis/gate page/gate.api";
+import { connectWS } from "../services/ws";
 import {
   useUserType,
   useGateData,
   useZonesData,
   useTicketData,
 } from "../store/gate";
-import { gateApis } from "../services/Apis/gate page/gate.api";
-import { connectWS } from "../services/ws";
 
 import ZoneCard from "../components/ZoneCard";
 import { TicketModel } from "../components/TicketModal";

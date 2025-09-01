@@ -3,10 +3,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 
 import { gateApis } from "../services/Apis/gate page/gate.api";
-import { useUserType, useGateData, useTicketData } from "../store/gate";
-import type { Zone } from "../services/Apis/gate page/gate.types";
 import { adminApis } from "../services/Apis/admin/admin.api";
+import type { Zone } from "../services/Apis/gate page/gate.types";
 import type { ToggleZone } from "../services/Apis/admin/admin.types";
+import { useUserType, useGateData, useTicketData } from "../store/gate";
 
 type ZoneCardProps = {
   zone: Zone;
@@ -92,13 +92,23 @@ const ZoneCard = ({ zone, type }: ZoneCardProps) => {
 
   const toggleStatus = useMutation({
     mutationFn: (body: ToggleZone) => adminApis.toggleZone(body),
-    onSuccess: () => {
-      Swal.fire({
-        title: "Success!",
-        text: "Zone updated successfully !",
-        icon: "success",
-        confirmButtonText: "Ok",
-      });
+    onSuccess: (res) => {
+      console.log(res);
+      if (res) {
+        Swal.fire({
+          title: "Success!",
+          text: "Zone updated successfully !",
+          icon: "success",
+          confirmButtonText: "Ok",
+        });
+      } else {
+        Swal.fire({
+          title: "Error!",
+          text: "Something Wrong",
+          icon: "error",
+          confirmButtonText: "Ok",
+        });
+      }
     },
     onError: () => {
       Swal.fire({
@@ -155,7 +165,10 @@ const ZoneCard = ({ zone, type }: ZoneCardProps) => {
                 {zone.open ? (
                   <button
                     onClick={() =>
-                      toggleStatus.mutate({ zoneId: zone.zoneId, status: false })
+                      toggleStatus.mutate({
+                        zoneId: zone.zoneId,
+                        status: false,
+                      })
                     }
                     className="py-2 px-3 bg-green-500/20 text-green-300 border border-green-500/30 text-xs rounded-lg cursor-pointer"
                   >
@@ -265,13 +278,13 @@ const ZoneCard = ({ zone, type }: ZoneCardProps) => {
               {zone.reserved}
             </p>
           </div>
-          {type === 'admin' &&(
-          <div className="text-center">
-            <p className="text-gray-400">Subscribers</p>
-            <p className="font-mono font-medium text-gray-200">
-              {zone.subscriberCount}
-            </p>
-          </div>
+          {type === "admin" && (
+            <div className="text-center">
+              <p className="text-gray-400">Subscribers</p>
+              <p className="font-mono font-medium text-gray-200">
+                {zone.subscriberCount}
+              </p>
+            </div>
           )}
         </div>
         {type !== "admin" && (

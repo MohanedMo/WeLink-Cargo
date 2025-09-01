@@ -1,22 +1,23 @@
-import { useEffect } from "react";
-import { useSearchParams, useNavigate} from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+
 import LoginForm from "../components/Login";
 import TicketDetails from "../components/TicketDetails";
 import TicketId from "../components/TicketId";
+import { useUserName } from "../store/checkout";
 
 const Checkout = () => {
-  const navigate = useNavigate()
   const [searchParams] = useSearchParams();
   const step = searchParams.get("step");
 
-useEffect(() => {
-    navigate("/checkout?step=login");
-}, [])
+  const { role } = useUserName();
+
+  if (role !== "employee") {
+    return <LoginForm />;
+  }
 
   return (
     <>
-      {step === "login" && <LoginForm />}
-      {step === "ticket-id" && <TicketId />}
+      {step !== "ticket-details" && <TicketId />}
       {step === "ticket-details" && <TicketDetails />}
     </>
   );

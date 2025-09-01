@@ -4,8 +4,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 
 import { adminApis } from "../services/Apis/admin/admin.api";
-import { useCategoriesData } from "../store/admin";
 import { connectWS } from "../services/ws";
+import { useCategoriesData } from "../store/admin";
 import type {
   Category,
   EditCategoryBody,
@@ -19,7 +19,7 @@ export default function Categories() {
   };
   const [editForm, setEditForm] = useState<EditCategoryBody>(staticCategory);
   const [saveLoading, setSaveLoading] = useState(false);
-  const { categoriesData, setCategoriesData } = useCategoriesData();
+  const {categoriesData, setCategoriesData } = useCategoriesData();
 
   const { data: categories, isLoading } = useQuery({
     queryKey: ["categories"],
@@ -192,7 +192,7 @@ export default function Categories() {
           <div className="text-center py-12">
             <DollarSign className="h-12 w-12 text-gray-600 mx-auto mb-4" />
             <p className="text-gray-400">
-              No categories found matching your search.
+              No categories found.
             </p>
           </div>
         )}

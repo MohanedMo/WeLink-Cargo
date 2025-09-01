@@ -28,6 +28,7 @@ export const staticZones = [
     id: "",
     name: "",
     categoryId: "",
+    zoneId: "",
     gateIds: ["", "", ""],
     totalSlots: 0,
     occupied: 0,
@@ -41,17 +42,18 @@ export const staticZones = [
   },
 ];
 const ticketStaticData = {
-    ticket:{
-        id: "",
-        type: "",
-        zoneId: "",
-        gateId: "",
-        checkinAt: "",
-        checkoutAt: null,
-    },
+  ticket: {
+    id: "",
+    type: "",
+    zoneId: "",
+    gateId: "",
+    checkinAt: "",
+    checkoutAt: null,
+  },
   zoneState: {
     id: "",
     name: "",
+    zoneId: "",
     categoryId: "",
     gateIds: ["", "", ""],
     totalSlots: 0,
@@ -81,6 +83,6 @@ export const useZonesData = create<ZonesData>((set) => ({
 export const useTicketData = create<TicketModelData>((set) => ({
   ticketData: ticketStaticData,
   isModelOpen: false,
-  setModelStatus: (status) => set({isModelOpen: status}),
+  setModelStatus: (status) => set({ isModelOpen: status }),
   setTicketData: (ticket) => set({ ticketData: ticket }),
 }));

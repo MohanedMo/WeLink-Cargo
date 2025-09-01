@@ -26,5 +26,5 @@ export interface Ticket {
     amount: number;
   }[];
   amount: number;
-  zoneState: Zone
+  zoneState: Zone;
 }

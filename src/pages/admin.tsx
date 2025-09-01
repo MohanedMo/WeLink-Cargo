@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
 import { CarFront, Box, Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { useUserName } from "../store/checkout";
 import { adminApis } from "../services/Apis/admin/admin.api";
-import type { Zone } from "../services/Apis/gate page/gate.types";
 import { useAdminZones } from "../store/admin";
+import { connectWS } from "../services/ws";
+import type { Zone } from "../services/Apis/gate page/gate.types";
 
 import LoginForm from "../components/Login";
 import Categories from "../components/Categories";
@@ -15,33 +15,31 @@ import ZoneCard from "../components/ZoneCard";
 import AddModel from "../components/AddModele";
 
 const Admin = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const step = searchParams.get("step");
   const [screen, setScreen] = useState("zones");
-  const [model, setModel] = useState('');
+  const [model, setModel] = useState("");
   const { role } = useUserName();
-  const {zonesAdminData, setZonesData} = useAdminZones()
-  
-  const {data: zones, isLoading} = useQuery({
-    queryKey: ['zones'],
-    queryFn: () => adminApis.getZones()
-  })
+  const { zonesAdminData, setZonesData } = useAdminZones();
 
+  const { data: zones, isLoading } = useQuery({
+    queryKey: ["zones"],
+    queryFn: () => adminApis.getZones(),
+  });
 
   useEffect(() => {
-    if (role !== "admin") {
-      navigate("/admin?step=login");
-    }
-    setZonesData(zones)
+    connectWS();
+  }, []);
+
+  useEffect(() => {
+    setZonesData(zones);
   }, [zones]);
 
-
+  if (role !== "admin") {
+    return <LoginForm />;
+  }
   return (
     <>
-      {step === "login" && <LoginForm />}
       <main className="container mx-auto px-6 py-4 max-w-7xl">
-        <div className="flex items-center justify-between w-full rounded-lg bg-gray-800/40 border border-gray-600/60 p-1 mb-3">
+        <div className="flex flex-col md:flex-row gap-3 md:gap-0 py-3 md:py-0 items-center justify-between w-full rounded-lg bg-gray-800/40 border border-gray-600/60 p-1 mb-3">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setScreen("zones")}
@@ -78,18 +76,24 @@ const Admin = () => {
             </button>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={() => setModel('hour')} className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors">
-                <Plus className="h-4 w-4" />
+            <button
+              onClick={() => setModel("hour")}
+              className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+            >
+              <Plus className="h-4 w-4" />
               <span>Add Rush Hour</span>
             </button>
-            <button onClick={() => setModel('vacation')} className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors">
-                <Plus className="h-4 w-4" />
+            <button
+              onClick={() => setModel("vacation")}
+              className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+            >
+              <Plus className="h-4 w-4" />
               <span>Add Vacation</span>
             </button>
           </div>
         </div>
-      {screen === "zones" && (
-        <div className="space-y-4">
+        {screen === "zones" && (
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-medium text-gray-100">
                 Available Zones
@@ -120,16 +124,20 @@ const Admin = () => {
             ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {zonesAdminData?.map((zone: Zone) => (
-                  <ZoneCard key={zone.id || zone.zoneId} zone={zone} type= 'admin'/>
+                  <ZoneCard
+                    key={zone.id || zone.zoneId}
+                    zone={zone}
+                    type="admin"
+                  />
                 ))}
               </div>
             )}
           </div>
-      )}
+        )}
       </main>
       {screen === "categories" && <Categories />}
       {screen === "log" && <Log />}
-      <AddModel model= {model} onClose={() => setModel('')} />
+      <AddModel model={model} onClose={() => setModel("")} />
     </>
   );
 };

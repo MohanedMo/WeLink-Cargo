@@ -4,7 +4,7 @@ import type { Ticket } from "../services/Apis/checkout/checkout.types";
 interface Username {
   username: string;
   role: string;
-  token: string
+  token: string;
   setUserName: (user: string, role: string, token: string) => void;
 }
 interface TicketDetail {
@@ -31,6 +31,7 @@ const staticTicket = {
   zoneState: {
     id: "",
     name: "",
+    zoneId: "",
     categoryId: "",
     gateIds: ["", "", ""],
     totalSlots: 0,
@@ -51,7 +52,8 @@ export const useUserName = create<Username>()(
       username: "",
       role: "",
       token: "",
-      setUserName: (user, userRole, token) => set({ username: user, role: userRole, token: token }),
+      setUserName: (user, userRole, token) =>
+        set({ username: user, role: userRole, token: token }),
     }),
     {
       name: "user-name",
@@ -60,8 +62,7 @@ export const useUserName = create<Username>()(
   )
 );
 
-export const useTicketDetails = create<TicketDetail>(
-    (set) => ({
-      ticketDetails: staticTicket,
-      setTicketDetails: (ticket) => set({ ticketDetails: ticket }),
-    }));
+export const useTicketDetails = create<TicketDetail>((set) => ({
+  ticketDetails: staticTicket,
+  setTicketDetails: (ticket) => set({ ticketDetails: ticket }),
+}));

@@ -5,8 +5,8 @@ import { Calendar, X, Plus, RefreshCw } from "lucide-react";
 import Swal from "sweetalert2";
 
 import { adminApis } from "../services/Apis/admin/admin.api";
-import type { RushHour, Vacation } from "../services/Apis/admin/admin.types";
 import { connectWS } from "../services/ws";
+import type { RushHour, Vacation } from "../services/Apis/admin/admin.types";
 
 interface AddVacationModalProps {
   model: string;
@@ -14,14 +14,12 @@ interface AddVacationModalProps {
 }
 
 export default function AddVacationModal({
-    
   model,
   onClose,
 }: AddVacationModalProps) {
-
-      useEffect(() => {
-        connectWS();
-      }, []);
+  useEffect(() => {
+    connectWS();
+  }, []);
 
   const [hoursData, setHoursData] = useState<RushHour>({
     weekDay: "",
@@ -46,13 +44,13 @@ export default function AddVacationModal({
       });
     },
     onError: () => {
-        Swal.fire({
+      Swal.fire({
         title: "Error",
         text: "Rush Hour not added !",
         icon: "error",
         confirmButtonText: "Ok",
       });
-    }
+    },
   });
   const vacationMutate = useMutation({
     mutationFn: (vacation: Vacation) => adminApis.addVacation(vacation),
@@ -65,34 +63,40 @@ export default function AddVacationModal({
       });
     },
     onError: () => {
-        Swal.fire({
+      Swal.fire({
         title: "Error",
         text: "Vacation not added !",
         icon: "error",
         confirmButtonText: "Ok",
       });
-    }
+    },
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (model === 'hour' ? !hoursData.weekDay.length || !hoursData.from.length || !hoursData.to.length : !vacationData.name.length ||
-      !vacationData.from.length ||
-      !vacationData.to.length) {
+    if (
+      model === "hour"
+        ? !hoursData.weekDay.length ||
+          !hoursData.from.length ||
+          !hoursData.to.length
+        : !vacationData.name.length ||
+          !vacationData.from.length ||
+          !vacationData.to.length
+    ) {
       return;
     }
     setIsSubmitting(true);
     try {
-      if(model === 'hour') {
-        hoursMutate.mutate(hoursData)
+      if (model === "hour") {
+        hoursMutate.mutate(hoursData);
         setHoursData({
           weekDay: "",
           from: "",
           to: "",
         });
       }
-      if(model === 'vacation') {
-        vacationMutate.mutate(vacationData)
+      if (model === "vacation") {
+        vacationMutate.mutate(vacationData);
         setVacationData({
           name: "",
           from: "",
@@ -107,7 +111,7 @@ export default function AddVacationModal({
     }
   };
 
-  if (model.length === 0) return null;
+  if (!model) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-[9999] p-4">
@@ -136,7 +140,7 @@ export default function AddVacationModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              {model === "hour" ? "Week Day" : "Vacation Name"}{" "}
+              {model === "hour" ? "Week Day" : "Vacation Name"}
               <span className="text-red-400">*</span>
             </label>
             <input
@@ -154,7 +158,7 @@ export default function AddVacationModal({
                     })
               }
               className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="e.g., Summer Break"
+              placeholder="e.g., Mohaned"
               required
             />
           </div>
@@ -166,11 +170,7 @@ export default function AddVacationModal({
               </label>
               <input
                 type={model === "hour" ? "time" : "date"}
-                value={
-                  model === "hour"
-                    ? hoursData.from
-                    : vacationData.from
-                }
+                value={model === "hour" ? hoursData.from : vacationData.from}
                 onChange={(e) =>
                   model === "hour"
                     ? setHoursData({
@@ -192,9 +192,7 @@ export default function AddVacationModal({
               </label>
               <input
                 type={model === "hour" ? "time" : "date"}
-                value={
-                  model === "hour" ? hoursData.to : vacationData.to
-                }
+                value={model === "hour" ? hoursData.to : vacationData.to}
                 onChange={(e) =>
                   model === "hour"
                     ? setHoursData({
@@ -207,11 +205,7 @@ export default function AddVacationModal({
                       })
                 }
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                min={
-                  model === "hour"
-                    ? hoursData.from
-                    : vacationData.from
-                }
+                min={model === "hour" ? hoursData.from : vacationData.from}
                 required
               />
             </div>

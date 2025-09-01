@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { status } from "../services/ws";
 import { Terminal } from "lucide-react";
 import { NavLink } from "react-router-dom";
+
+import { status } from "../services/ws";
+import { useGateData } from "../store/gate";
 
 interface GateHeaderProps {
   gateName?: string;
@@ -10,6 +12,7 @@ interface GateHeaderProps {
 
 export function GateHeader({ gateName, gateLocation }: GateHeaderProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const { setGateData } = useGateData();
 
   // Update time every second
   useEffect(() => {
@@ -78,44 +81,108 @@ export function GateHeader({ gateName, gateLocation }: GateHeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-blue-200/40 bg-blue-900/95 backdrop-blur-md supports-[backdrop-filter]:bg-blue-900/90">
-      <div className="container mx-auto py-4 max-w-7xl  flex h-22 items-center justify-between px-6 lg:px-8">
-        {gateName && (
-          <div className="flex items-center gap-6 lg:gap-8">
-            <div className="flex items-center gap-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/20 border border-green-500/30 ring-1 ring-green-500/10">
-                <Terminal className="h-5 w-5 text-green-400" />
-              </div>
-              <div className="space-y-0.5">
-                <h1 className="text-lg font-bold tracking-tight text-gray-100">
-                  {gateName}
-                </h1>
-                <p className="font-mono text-sm text-gray-300">
-                  {gateLocation}
-                </p>
-                <div className="flex items-center gap-2">
-                  {getStatusIcon()}
-                  <span className={`text-sm font-medium ${getStatusColor()}`}>
-                    {status}
-                  </span>
+    <>
+      <header className="sticky top-0 z-50 w-full border-b border-blue-200/40 bg-blue-900/95 backdrop-blur-md supports-[backdrop-filter]:bg-blue-900/90">
+        <div className="container mx-auto py-4 max-w-7xl  flex h-22 items-center justify-between px-6 lg:px-8">
+          {gateName && (
+            <div className="flex items-center gap-6 lg:gap-8">
+              <div className="flex items-center gap-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/20 border border-green-500/30 ring-1 ring-green-500/10">
+                  <Terminal className="h-5 w-5 text-green-400" />
+                </div>
+                <div className="space-y-0.5">
+                  <h1 className="text-lg font-bold tracking-tight text-gray-100">
+                    {gateName}
+                  </h1>
+                  <p className="font-mono text-sm text-gray-300">
+                    {gateLocation}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    {getStatusIcon()}
+                    <span className={`text-sm font-medium ${getStatusColor()}`}>
+                      {status}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="hidden md:flex items-center gap-4 lg:gap-6">
+          <div
+            className={`${
+              gateName ? "hidden" : ""
+            } md:flex items-center gap-4 lg:gap-6`}
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-5">
+                <NavLink
+                  onClick={() =>
+                    setGateData({ id: "", name: "", zoneIds: [], location: "" })
+                  }
+                  className={({ isActive }) =>
+                    isActive ? "font-extrabold text-white" : "text-white"
+                  }
+                  to={"/"}
+                >
+                  Gates
+                </NavLink>
+                <NavLink
+                  onClick={() =>
+                    setGateData({ id: "", name: "", zoneIds: [], location: "" })
+                  }
+                  className={({ isActive }) =>
+                    isActive ? "font-extrabold text-white" : "text-white"
+                  }
+                  to="/checkout"
+                >
+                  Checkout
+                </NavLink>
+                <NavLink
+                  onClick={() =>
+                    setGateData({ id: "", name: "", zoneIds: [], location: "" })
+                  }
+                  className={({ isActive }) =>
+                    isActive ? "font-extrabold text-white" : "text-white"
+                  }
+                  to="admin"
+                >
+                  Admin
+                </NavLink>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 lg:gap-6">
+            <div className="text-right space-y-0.5">
+              <div className="font-mono text-base font-bold tracking-wider text-gray-100">
+                {formatTime(currentTime)}
+              </div>
+              <div className="font-mono text-xs text-gray-300">
+                {formatDate(currentTime)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      {gateName && (
+        <div className="sticky md:hidden top-[88px] z-50 w-full flex py-3 justify-center bg-black items-center gap-4 lg:gap-6">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-5">
               <NavLink
+                onClick={() =>
+                  setGateData({ id: "", name: "", zoneIds: [], location: "" })
+                }
                 className={({ isActive }) =>
                   isActive ? "font-extrabold text-white" : "text-white"
                 }
-                to={"/gates"}
+                to={"/"}
               >
                 Gates
               </NavLink>
               <NavLink
+                onClick={() =>
+                  setGateData({ id: "", name: "", zoneIds: [], location: "" })
+                }
                 className={({ isActive }) =>
                   isActive ? "font-extrabold text-white" : "text-white"
                 }
@@ -124,28 +191,20 @@ export function GateHeader({ gateName, gateLocation }: GateHeaderProps) {
                 Checkout
               </NavLink>
               <NavLink
+                onClick={() =>
+                  setGateData({ id: "", name: "", zoneIds: [], location: "" })
+                }
                 className={({ isActive }) =>
                   isActive ? "font-extrabold text-white" : "text-white"
                 }
-                to="/admin"
+                to="admin"
               >
                 Admin
               </NavLink>
             </div>
           </div>
         </div>
-
-        <div className="flex items-center gap-4 lg:gap-6">
-          <div className="text-right space-y-0.5">
-            <div className="font-mono text-base font-bold tracking-wider text-gray-100">
-              {formatTime(currentTime)}
-            </div>
-            <div className="font-mono text-xs text-gray-300">
-              {formatDate(currentTime)}
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
+      )}
+    </>
   );
 }

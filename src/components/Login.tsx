@@ -1,20 +1,17 @@
 import type React from "react";
-import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import Swal from "sweetalert2";
-
 
 import { checkoutApis } from "../services/Apis/checkout/checkout.api";
 import { useUserName } from "../store/checkout";
 
 export default function LoginForm() {
-  const navigate = useNavigate();
   const [usernameInput, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const { username, setUserName } = useUserName();
+  const { setUserName } = useUserName();
 
   const mutation = useMutation({
     mutationFn: () => checkoutApis.login({ username: usernameInput, password }),
@@ -27,11 +24,15 @@ export default function LoginForm() {
         confirmButtonText: "Ok",
       });
       setUserName(loginRes.user.username, loginRes.user.role, loginRes.token);
-      if(loginRes.user.role === 'admin'){
-        navigate('/admin')
-      }else{
-        navigate('/checkout?step=ticket-id')
-      }
+    },
+    onError: () => {
+      setIsLoading(false);
+      Swal.fire({
+        title: "Error",
+        text: "Login Unsuccessfully !",
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
     },
   });
 
@@ -50,16 +51,6 @@ export default function LoginForm() {
     }
     setIsLoading(true);
     try {
-      if (username === usernameInput) {
-        Swal.fire({
-          title: "Attention!",
-          text: "You are already signed in",
-          icon: "warning",
-          confirmButtonText: "Ok",
-        });
-        navigate('/checkout?step=ticket-id')
-        return;
-      }
       mutation.mutate();
     } catch (err) {
       console.error("Login error:", err);

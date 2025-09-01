@@ -1,9 +1,11 @@
 import { baseApiUrl } from "../api-constant";
 import { useUserName } from "../../../store/checkout";
-import type { EditCategoryBody, RushHour, ToggleZone, Vacation } from "./admin.types";
-
-  const { token } = useUserName.getState();
-
+import type {
+  EditCategoryBody,
+  RushHour,
+  ToggleZone,
+  Vacation,
+} from "./admin.types";
 
 async function categories() {
   const res = await fetch(`${baseApiUrl}/master/categories`);
@@ -16,7 +18,8 @@ async function categories() {
 
   return data;
 }
- async function editCategory(body: EditCategoryBody) {
+async function editCategory(body: EditCategoryBody) {
+  const { token } = useUserName.getState();
 
   if (!token) return;
 
@@ -40,29 +43,31 @@ async function categories() {
 
   return data;
 }
- async function getSubscriptios() {
+// Ready to make it but it's not in task
 
-  if (!token) return;
+//  async function getSubscriptios() {
 
-  const res = await fetch(`${baseApiUrl}/admin/subscriptions`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+//   if (!token) return;
 
-  if (!res.ok) {
-    throw new Error(`Failed to fetch zones: ${res.status}`);
-  }
+//   const res = await fetch(`${baseApiUrl}/admin/subscriptions`, {
+//     method: "GET",
+//     headers: {
+//       "Content-Type": "application/json",
+//       Authorization: `Bearer ${token}`,
+//     },
+//   });
 
-  const data = res.json();
+//   if (!res.ok) {
+//     throw new Error(`Failed to fetch zones: ${res.status}`);
+//   }
 
-  console.log(data);
+//   const data = res.json();
 
-  return data;
-}
- async function getZones() {
+//   console.log(data);
+
+//   return data;
+// }
+async function getZones() {
   const res = await fetch(`${baseApiUrl}/admin/reports/parking-state`);
 
   if (!res.ok) {
@@ -73,24 +78,22 @@ async function categories() {
 
   return data;
 }
- async function toggleZone(body: ToggleZone) {
+async function toggleZone(body: ToggleZone) {
+  const { token } = useUserName.getState();
 
   if (!token) return;
 
-  const res = await fetch(
-    `${baseApiUrl}/admin/zones/${body.zoneId}/open`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        open: body.status,
-        zoneId: body.zoneId
-      }),
-    }
-  );
+  const res = await fetch(`${baseApiUrl}/admin/zones/${body.zoneId}/open`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      open: body.status,
+      zoneId: body.zoneId,
+    }),
+  });
 
   if (!res.ok) {
     throw new Error(`Failed to fetch zones: ${res.status}`);
@@ -100,25 +103,23 @@ async function categories() {
 
   return data;
 }
- async function addRushHour(body: RushHour) {
+async function addRushHour(body: RushHour) {
+  const { token } = useUserName.getState();
 
   if (!token) return;
 
-  const res = await fetch(
-    `${baseApiUrl}/admin/rush-hours`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        weekday: body.weekDay,
-        from: body.from,
-        to: body.to
-      }),
-    }
-  );
+  const res = await fetch(`${baseApiUrl}/admin/rush-hours`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      weekday: body.weekDay,
+      from: body.from,
+      to: body.to,
+    }),
+  });
 
   if (!res.ok) {
     throw new Error(`Failed to fetch zones: ${res.status}`);
@@ -128,25 +129,23 @@ async function categories() {
 
   return data;
 }
- async function addVacation(body: Vacation) {
+async function addVacation(body: Vacation) {
+  const { token } = useUserName.getState();
 
   if (!token) return;
 
-  const res = await fetch(
-    `${baseApiUrl}/admin/vacations`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        name: body.name,
-        from: body.from,
-        to: body.to
-      }),
-    }
-  );
+  const res = await fetch(`${baseApiUrl}/admin/vacations`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      name: body.name,
+      from: body.from,
+      to: body.to,
+    }),
+  });
 
   if (!res.ok) {
     throw new Error(`Failed to fetch zones: ${res.status}`);
@@ -157,4 +156,11 @@ async function categories() {
   return data;
 }
 
-export const adminApis = { categories, editCategory, getZones, toggleZone, addRushHour, addVacation };
+export const adminApis = {
+  categories,
+  editCategory,
+  getZones,
+  toggleZone,
+  addRushHour,
+  addVacation,
+};
