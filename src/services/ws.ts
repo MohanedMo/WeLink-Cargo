@@ -1,3 +1,4 @@
+import { useAdminZones, useCategoriesData, useLogData } from "../store/admin";
 import { useZonesData } from "../store/gate";
 
 import type { Zone } from "./Apis/gate page/gate.types";
@@ -25,6 +26,9 @@ export const connectWS = (gateId: string = "gate_1") => {
   socket.onmessage = (ev) => {
     try {
       const { setZones, zonesData } = useZonesData.getState();
+      const {categoriesData, setCategoriesData} = useCategoriesData.getState()
+      const {logData, setLogData} = useLogData.getState()
+      const {zonesAdminData, setZonesData} = useAdminZones.getState()
       const msg = JSON.parse(ev.data);
       if (msg.type === "zone-update") {
         const zone = msg.payload as Partial<Zone> & { id: string };
@@ -34,6 +38,26 @@ export const connectWS = (gateId: string = "gate_1") => {
 
         setZones(newZones as Zone[]);
       }
+      if (msg.type === "admin-update") {
+         const {adminId, targetId, action, details, timestamp } = msg.payload;
+         console.log(msg.payload);
+         const newLog = logData.filter((l) => l.adminId.length !== 0)
+         setLogData([...newLog, {adminId, action, timestamp}])
+         console.log(logData);
+         
+         if(action === 'category-rates-changed'){
+            const newCategories = categoriesData.map((c) =>
+             c.id === targetId ? { ...c, ...details } : c
+           );
+           setCategoriesData(newCategories)
+         }
+         if(action === 'zone-closed' || action === 'zone-opened'){
+            const newZones = zonesAdminData.map((z) =>
+             z.id === targetId ? { ...z, ...details } : z
+           );
+           setZonesData(newZones)
+         }
+        }
     } catch (e) {
       console.error("WS parse error", e);
     }

@@ -20,7 +20,6 @@ export default function LoginForm() {
     mutationFn: () => checkoutApis.login({ username: usernameInput, password }),
     onSuccess: (loginRes) => {
       setIsLoading(false);
-      console.log(loginRes);
       Swal.fire({
         title: "Success",
         text: "login successfully !",
@@ -28,7 +27,11 @@ export default function LoginForm() {
         confirmButtonText: "Ok",
       });
       setUserName(loginRes.user.username, loginRes.user.role, loginRes.token);
-      navigate('/checkout?step=ticket-id')
+      if(loginRes.user.role === 'admin'){
+        navigate('/admin')
+      }else{
+        navigate('/checkout?step=ticket-id')
+      }
     },
   });
 

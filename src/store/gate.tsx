@@ -23,7 +23,7 @@ interface TicketModelData {
   setModelStatus: (status: boolean) => void;
   setTicketData: (setTicketData: TicketModel) => void;
 }
-const staticZones = [
+export const staticZones = [
   {
     id: "",
     name: "",

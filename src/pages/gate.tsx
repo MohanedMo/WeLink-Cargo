@@ -39,7 +39,6 @@ const Gate = () => {
       setGateData(newGate);
       setZones(zones || []);
     }
-
     connectWS(gateId);
   }, [gates, gateId]);
 
@@ -117,7 +116,7 @@ const Gate = () => {
             ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {zonesData?.map((zone) => (
-                  <ZoneCard key={zone.id} zone={zone} />
+                  <ZoneCard key={zone.id} zone={zone} type="user" />
                 ))}
               </div>
             )}

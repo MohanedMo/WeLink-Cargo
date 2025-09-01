@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import type { Zone } from "../services/Apis/gate page/gate.types";
+import Swal from "sweetalert2";
+
 import { gateApis } from "../services/Apis/gate page/gate.api";
 import { useUserType, useGateData, useTicketData } from "../store/gate";
-import Swal from "sweetalert2";
+import type { Zone } from "../services/Apis/gate page/gate.types";
+import { adminApis } from "../services/Apis/admin/admin.api";
+import type { ToggleZone } from "../services/Apis/admin/admin.types";
 
 type ZoneCardProps = {
   zone: Zone;
+  type: string;
 };
 
-const ZoneCard = ({ zone }: ZoneCardProps) => {
+const ZoneCard = ({ zone, type }: ZoneCardProps) => {
   const { userType } = useUserType();
   const { gateData } = useGateData();
   const { setModelStatus, setTicketData } = useTicketData();
@@ -31,7 +35,7 @@ const ZoneCard = ({ zone }: ZoneCardProps) => {
       ? bookTicketBodyForVisitor
       : bookTicketBodyForSubscriber;
 
-  const mutation = useMutation({
+  const ticketMutation = useMutation({
     mutationFn: () => gateApis.bookTicket(bodyByType),
     onSuccess: (bookedZone) => {
       setModelStatus(true);
@@ -55,10 +59,10 @@ const ZoneCard = ({ zone }: ZoneCardProps) => {
   });
 
   useEffect(() => {
-    if(subscriberId.length !== 0){
-      refetch()
+    if (subscriberId.length !== 0) {
+      refetch();
     }
-  },[subscriberId])
+  }, [subscriberId]);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -71,10 +75,10 @@ const ZoneCard = ({ zone }: ZoneCardProps) => {
       });
       return;
     }
-    refetch();    
+    refetch();
 
     if (data && data?.active && data?.category === zone.categoryId) {
-      mutation.mutate();
+      ticketMutation.mutate();
     } else {
       Swal.fire({
         title: "Error!",
@@ -85,6 +89,27 @@ const ZoneCard = ({ zone }: ZoneCardProps) => {
       return;
     }
   }
+
+
+  const toggleStatus = useMutation({
+    mutationFn: (body: ToggleZone) => adminApis.toggleZone(body),
+    onSuccess: () => {
+      Swal.fire({
+        title: "Success!",
+        text: "Zone updated successfully !",
+        icon: "success",
+        confirmButtonText: "Ok",
+      });
+    },
+    onError: () => {
+      Swal.fire({
+        title: "Error!",
+        text: "Something Wrong",
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
+    },
+  });
 
   return (
     <div
@@ -126,17 +151,32 @@ const ZoneCard = ({ zone }: ZoneCardProps) => {
                 </span>
               </div>
             </div>
+            {type === 'admin' && (
             <div>
               {zone.open ? (
-                <span className="py-2 px-3 bg-green-500/20 text-green-300 border border-green-500/30 text-xs rounded-lg">
+                <button onClick={() => toggleStatus.mutate({zoneId:zone.id, status: false})} className="py-2 px-3 bg-green-500/20 text-green-300 border border-green-500/30 text-xs rounded-lg cursor-pointer">
                   OPEN
-                </span>
+                </button>
               ) : (
-                <span className="py-2 px-3 bg-red-500/20 text-red-300 border border-red-500/30 text-xs rounded-lg">
+                <button onClick={() => toggleStatus.mutate({zoneId:zone.id, status: true})} className="py-2 px-3 bg-red-500/20 text-red-300 border border-red-500/30 text-xs rounded-lg cursor-pointer">
                   CLOSED
-                </span>
+                </button>
               )}
             </div>
+            )}
+            {type !== "admin" && (
+              <div>
+                {zone.open ? (
+                  <span className="py-2 px-3 bg-green-500/20 text-green-300 border border-green-500/30 text-xs rounded-lg">
+                    OPEN
+                  </span>
+                ) : (
+                  <span className="py-2 px-3 bg-red-500/20 text-red-300 border border-red-500/30 text-xs rounded-lg">
+                    CLOSED
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3 mb-4">
@@ -246,27 +286,41 @@ const ZoneCard = ({ zone }: ZoneCardProps) => {
             ${zone.rateNormal}
           </span>
         </div>
-        {userType === "visitor" ? (
-          <button
-            onClick={() => mutation.mutate()}
-            className="px-4 py-2 bg-blue-900/95 rounded-xl mt-5 cursor-pointer text-white"
-          >
-            Book A Ticket
-          </button>
-        ) : (
-          <form onSubmit={handleSubmit} className="flex my-3 gap-3">
-            <input
-              onChange={(e) => setSubscriberId(e.currentTarget.value)}
-              type="text"
-              id="subscription-id"
-              placeholder="Subscription ID"
-              className="text-white p-2 border-2 border-blue-900/95 rounded-lg"
-            />
-            <input
-              className="px-4 py-1 bg-blue-900/95 rounded-xl cursor-pointer text-white"
-              type="submit"
-            />
-          </form>
+        {type !== "admin" && (
+          <div>
+            {userType === "visitor" ? (
+              <button
+                onClick={() => ticketMutation.mutate()}
+                disabled={!zone.open || zone.availableForVisitors < 0}
+                className={`px-4 py-2 bg-blue-900/95 rounded-xl mt-5 ${
+                  !zone.open || zone.availableForVisitors < 0
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer"
+                }  text-white`}
+              >
+                Book A Ticket
+              </button>
+            ) : (
+              <form onSubmit={handleSubmit} className="flex my-3 gap-3">
+                <input
+                  onChange={(e) => setSubscriberId(e.currentTarget.value)}
+                  type="text"
+                  id="subscription-id"
+                  placeholder="Subscription ID"
+                  className="text-white p-2 border-2 border-blue-900/95 rounded-lg"
+                />
+                <input
+                  className={`px-4 py-2 bg-blue-900/95 rounded-xl ${
+                    !zone.open || zone.availableForVisitors < 0
+                      ? "cursor-not-allowed"
+                      : "cursor-pointer"
+                  }  text-white`}
+                  type="submit"
+                  disabled={!zone.open || zone.availableForSubscribers < 0}
+                />
+              </form>
+            )}
+          </div>
         )}
       </div>
     </div>

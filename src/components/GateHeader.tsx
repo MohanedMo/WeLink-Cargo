@@ -1,18 +1,14 @@
 import { useState, useEffect } from "react";
 import { status } from "../services/ws";
-import { Terminal } from "lucide-react"
+import { Terminal } from "lucide-react";
 import { NavLink } from "react-router-dom";
-
 
 interface GateHeaderProps {
   gateName?: string;
   gateLocation?: string;
 }
 
-export function GateHeader({
-  gateName,
-  gateLocation,
-}: GateHeaderProps) {
+export function GateHeader({ gateName, gateLocation }: GateHeaderProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Update time every second
@@ -84,34 +80,57 @@ export function GateHeader({
   return (
     <header className="sticky top-0 z-50 w-full border-b border-blue-200/40 bg-blue-900/95 backdrop-blur-md supports-[backdrop-filter]:bg-blue-900/90">
       <div className="mx-auto flex h-22  max-w-7xl items-center justify-between px-6 lg:px-8">
-          {gateName && (
-        <div className="flex items-center gap-6 lg:gap-8">
-          <div className="flex items-center gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/20 border border-green-500/30 ring-1 ring-green-500/10">
-              <Terminal className="h-5 w-5 text-green-400" />
-            </div>
-            <div className="space-y-0.5">
-              <h1 className="text-lg font-bold tracking-tight text-gray-100">
-                {gateName}
-              </h1>
-              <p className="font-mono text-sm text-gray-300">{gateLocation}</p>
-              <div className="flex items-center gap-2">
-              {getStatusIcon()}
-              <span className={`text-sm font-medium ${getStatusColor()}`}>
-                {status}
-              </span>
-            </div>
+        {gateName && (
+          <div className="flex items-center gap-6 lg:gap-8">
+            <div className="flex items-center gap-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/20 border border-green-500/30 ring-1 ring-green-500/10">
+                <Terminal className="h-5 w-5 text-green-400" />
+              </div>
+              <div className="space-y-0.5">
+                <h1 className="text-lg font-bold tracking-tight text-gray-100">
+                  {gateName}
+                </h1>
+                <p className="font-mono text-sm text-gray-300">
+                  {gateLocation}
+                </p>
+                <div className="flex items-center gap-2">
+                  {getStatusIcon()}
+                  <span className={`text-sm font-medium ${getStatusColor()}`}>
+                    {status}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-          )}
+        )}
 
         <div className="hidden md:flex items-center gap-4 lg:gap-6">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-5">
-              <NavLink className='text-white' to={'/gates'}>Gates</NavLink>
-              <NavLink className='text-white' to='/checkout'>Checkout</NavLink>
-              <NavLink className='text-white' to='/admin'>Admin</NavLink>
+              <NavLink
+                className={({ isActive }) =>
+                  isActive ? "font-extrabold text-white" : "text-white"
+                }
+                to={"/gates"}
+              >
+                Gates
+              </NavLink>
+              <NavLink
+                className={({ isActive }) =>
+                  isActive ? "font-extrabold text-white" : "text-white"
+                }
+                to="/checkout"
+              >
+                Checkout
+              </NavLink>
+              <NavLink
+                className={({ isActive }) =>
+                  isActive ? "font-extrabold text-white" : "text-white"
+                }
+                to="/admin"
+              >
+                Admin
+              </NavLink>
             </div>
           </div>
         </div>
