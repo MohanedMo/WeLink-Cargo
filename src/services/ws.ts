@@ -40,10 +40,8 @@ export const connectWS = (gateId: string = "gate_1") => {
       }
       if (msg.type === "admin-update") {
          const {adminId, targetId, action, details, timestamp } = msg.payload;
-         console.log(msg.payload);
          const newLog = logData.filter((l) => l.adminId.length !== 0)
          setLogData([...newLog, {adminId, action, timestamp}])
-         console.log(logData);
          
          if(action === 'category-rates-changed'){
             const newCategories = categoriesData.map((c) =>
@@ -53,7 +51,7 @@ export const connectWS = (gateId: string = "gate_1") => {
          }
          if(action === 'zone-closed' || action === 'zone-opened'){
             const newZones = zonesAdminData.map((z) =>
-             z.id === targetId ? { ...z, ...details } : z
+             z.zoneId === targetId ? { ...z, ...details } : z
            );
            setZonesData(newZones)
          }

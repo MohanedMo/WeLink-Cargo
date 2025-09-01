@@ -12,12 +12,14 @@ import LoginForm from "../components/Login";
 import Categories from "../components/Categories";
 import Log from "../components/Log";
 import ZoneCard from "../components/ZoneCard";
+import AddModel from "../components/AddModele";
 
 const Admin = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const step = searchParams.get("step");
-  const [screen, setScreen] = useState("categories");
+  const [screen, setScreen] = useState("zones");
+  const [model, setModel] = useState('');
   const { role } = useUserName();
   const {zonesAdminData, setZonesData} = useAdminZones()
   
@@ -33,6 +35,7 @@ const Admin = () => {
     }
     setZonesData(zones)
   }, [zones]);
+
 
   return (
     <>
@@ -75,11 +78,11 @@ const Admin = () => {
             </button>
           </div>
           <div className="flex items-center gap-3">
-            <button className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors">
+            <button onClick={() => setModel('hour')} className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors">
                 <Plus className="h-4 w-4" />
               <span>Add Rush Hour</span>
             </button>
-            <button className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors">
+            <button onClick={() => setModel('vacation')} className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors">
                 <Plus className="h-4 w-4" />
               <span>Add Vacation</span>
             </button>
@@ -117,7 +120,7 @@ const Admin = () => {
             ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {zonesAdminData?.map((zone: Zone) => (
-                  <ZoneCard key={zone.id} zone={zone} type= 'admin'/>
+                  <ZoneCard key={zone.id || zone.zoneId} zone={zone} type= 'admin'/>
                 ))}
               </div>
             )}
@@ -126,6 +129,7 @@ const Admin = () => {
       </main>
       {screen === "categories" && <Categories />}
       {screen === "log" && <Log />}
+      <AddModel model= {model} onClose={() => setModel('')} />
     </>
   );
 };

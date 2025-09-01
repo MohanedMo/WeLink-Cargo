@@ -90,7 +90,6 @@ const ZoneCard = ({ zone, type }: ZoneCardProps) => {
     }
   }
 
-
   const toggleStatus = useMutation({
     mutationFn: (body: ToggleZone) => adminApis.toggleZone(body),
     onSuccess: () => {
@@ -147,22 +146,32 @@ const ZoneCard = ({ zone, type }: ZoneCardProps) => {
                   data-slot="badge"
                   className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&amp;]:hover:bg-primary/90 text-xs font-medium bg-blue-500/20 text-blue-300 border-blue-500/30"
                 >
-                  {zone.categoryId}
+                  {type === "admin" ? zone.zoneId : zone.categoryId}
                 </span>
               </div>
             </div>
-            {type === 'admin' && (
-            <div>
-              {zone.open ? (
-                <button onClick={() => toggleStatus.mutate({zoneId:zone.id, status: false})} className="py-2 px-3 bg-green-500/20 text-green-300 border border-green-500/30 text-xs rounded-lg cursor-pointer">
-                  OPEN
-                </button>
-              ) : (
-                <button onClick={() => toggleStatus.mutate({zoneId:zone.id, status: true})} className="py-2 px-3 bg-red-500/20 text-red-300 border border-red-500/30 text-xs rounded-lg cursor-pointer">
-                  CLOSED
-                </button>
-              )}
-            </div>
+            {type === "admin" && (
+              <div>
+                {zone.open ? (
+                  <button
+                    onClick={() =>
+                      toggleStatus.mutate({ zoneId: zone.zoneId, status: false })
+                    }
+                    className="py-2 px-3 bg-green-500/20 text-green-300 border border-green-500/30 text-xs rounded-lg cursor-pointer"
+                  >
+                    OPEN
+                  </button>
+                ) : (
+                  <button
+                    onClick={() =>
+                      toggleStatus.mutate({ zoneId: zone.zoneId, status: true })
+                    }
+                    className="py-2 px-3 bg-red-500/20 text-red-300 border border-red-500/30 text-xs rounded-lg cursor-pointer"
+                  >
+                    CLOSED
+                  </button>
+                )}
+              </div>
             )}
             {type !== "admin" && (
               <div>
@@ -192,19 +201,18 @@ const ZoneCard = ({ zone, type }: ZoneCardProps) => {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-users h-3.5 w-3.5 text-gray-400"
+                className="lucide lucide-user-check h-3.5 w-3.5 text-green-400"
               >
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
                 <circle cx="9" cy="7" r="4"></circle>
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                <polyline points="16 11 18 13 22 9"></polyline>
               </svg>
               <span className="text-xs font-medium text-gray-400">
-                Occupied
+                Available Visitor
               </span>
             </div>
-            <p className="font-mono text-lg font-bold text-gray-100">
-              {zone.occupied}
+            <p className="font-mono text-lg font-bold text-green-400">
+              {zone.availableForVisitors}
             </p>
           </div>
           <div className="space-y-1">
@@ -226,13 +234,11 @@ const ZoneCard = ({ zone, type }: ZoneCardProps) => {
                 <polyline points="16 11 18 13 22 9"></polyline>
               </svg>
               <span className="text-xs font-medium text-gray-400">
-                Available
+                Available Subscribers
               </span>
             </div>
             <p className="font-mono text-lg font-bold text-green-400">
-              {userType === "visitor"
-                ? zone.availableForVisitors
-                : zone.availableForSubscribers}
+              {zone.availableForSubscribers}
             </p>
           </div>
         </div>
@@ -242,9 +248,9 @@ const ZoneCard = ({ zone, type }: ZoneCardProps) => {
             <p className="font-mono font-medium text-gray-200">{zone.free}</p>
           </div>
           <div className="text-center">
-            <p className="text-gray-400">Reserved</p>
+            <p className="text-gray-400">Occupied</p>
             <p className="font-mono font-medium text-gray-200">
-              {zone.reserved}
+              {zone.occupied}
             </p>
           </div>
           <div className="text-center">
@@ -253,39 +259,55 @@ const ZoneCard = ({ zone, type }: ZoneCardProps) => {
               {zone.totalSlots}
             </p>
           </div>
+          <div className="text-center">
+            <p className="text-gray-400">Reserved</p>
+            <p className="font-mono font-medium text-gray-200">
+              {zone.reserved}
+            </p>
+          </div>
+          {type === 'admin' &&(
+          <div className="text-center">
+            <p className="text-gray-400">Subscribers</p>
+            <p className="font-mono font-medium text-gray-200">
+              {zone.subscriberCount}
+            </p>
+          </div>
+          )}
         </div>
-        <div className="flex items-center justify-between pt-3 border-t border-gray-700/40">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-sm font-bold text-gray-100">
-              ${zone.rateSpecial}
-            </span>
-            <span
-              data-slot="badge"
-              className="justify-center rounded-md px-2 py-0.5 font-medium w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&amp;]:hover:bg-primary/90 bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs flex items-center gap-1"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-triangle-alert h-3 w-3"
+        {type !== "admin" && (
+          <div className="flex items-center justify-between pt-3 border-t border-gray-700/40">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-sm font-bold text-gray-100">
+                ${zone.rateSpecial}
+              </span>
+              <span
+                data-slot="badge"
+                className="justify-center rounded-md px-2 py-0.5 font-medium w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&amp;]:hover:bg-primary/90 bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs flex items-center gap-1"
               >
-                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path>
-                <path d="M12 9v4"></path>
-                <path d="M12 17h.01"></path>
-              </svg>
-              SPECIAL
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-triangle-alert h-3 w-3"
+                >
+                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path>
+                  <path d="M12 9v4"></path>
+                  <path d="M12 17h.01"></path>
+                </svg>
+                SPECIAL
+              </span>
+            </div>
+            <span className="text-xs text-gray-400 line-through">
+              ${zone.rateNormal}
             </span>
           </div>
-          <span className="text-xs text-gray-400 line-through">
-            ${zone.rateNormal}
-          </span>
-        </div>
+        )}
         {type !== "admin" && (
           <div>
             {userType === "visitor" ? (

@@ -79,7 +79,7 @@ export function GateHeader({ gateName, gateLocation }: GateHeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-blue-200/40 bg-blue-900/95 backdrop-blur-md supports-[backdrop-filter]:bg-blue-900/90">
-      <div className="mx-auto flex h-22  max-w-7xl items-center justify-between px-6 lg:px-8">
+      <div className="container mx-auto py-4 max-w-7xl  flex h-22 items-center justify-between px-6 lg:px-8">
         {gateName && (
           <div className="flex items-center gap-6 lg:gap-8">
             <div className="flex items-center gap-4">

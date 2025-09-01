@@ -8,6 +8,7 @@ export interface Gate {
 export interface Zone {
   id: string;
   name: string;
+  zoneId: string
   categoryId: string;
   gateIds: string[];
   totalSlots: number;
@@ -18,6 +19,7 @@ export interface Zone {
   availableForSubscribers: number;
   rateNormal: number;
   rateSpecial: number;
+  subscriberCount?: number
   open: boolean;
 }
 export interface BookTicketBodyVisitor {
